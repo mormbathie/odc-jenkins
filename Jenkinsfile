@@ -4,11 +4,7 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker_hub'
         DOCKERHUB_USER = 'mormbathie'
-        SONARQUBE_ENV = 'sonarqub_cred' // nom défini dans "Configure System"
-    }
-
-    tools {
-        sonarQubeScanner 'DefaultScanner' // nom défini dans "Global Tool Configuration"
+        SONARQUBE_ENV = 'sonarqub_cred' // Nom défini dans "Manage Jenkins > Configure System"
     }
 
     stages {
@@ -21,14 +17,17 @@ pipeline {
 
         stage('Analyse SonarQube') {
             steps {
+                echo "🔍 Analyse du code avec SonarQube"
                 withSonarQubeEnv("${SONARQUBE_ENV}") {
-                    sh '''
-                        sonar-scanner \
-                          -Dsonar.projectKey=fileRouge \
-                          -Dsonar.sources=. \
-                          -Dsonar.language=js \
-                          -Dsonar.sourceEncoding=UTF-8
-                    '''
+                    dir('Backend/odc') {
+                        sh '''
+                            sonar-scanner \
+                              -Dsonar.projectKey=fileRouge \
+                              -Dsonar.sources=. \
+                              -Dsonar.host.url=http://localhost:9000 \
+                              -Dsonar.login=sqp_631893dabada6b71f91292f927e428a239c6aadb
+                        '''
+                    }
                 }
             }
         }
@@ -88,6 +87,7 @@ pipeline {
 
         stage('Run Docker Compose') {
             steps {
+                echo "🚀 Déploiement avec Docker Compose"
                 sh '''
                     docker-compose down || true
                     docker-compose build
