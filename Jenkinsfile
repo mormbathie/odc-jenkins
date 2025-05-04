@@ -15,19 +15,23 @@ pipeline {
             }
         }
 
-        stage('Analyse SonarQube') {
-            steps {
-                echo "🔍 Analyse avec SonarQube"
-                withSonarQubeEnv('SonarQube') { // Nom exact défini dans Manage Jenkins > Configure System
-                    sh '''
-                        sonar-scanner \
-                          -Dsonar.projectKey=fileRouge \
-                          -Dsonar.sources=. \
-                          -Dsonar.token=$SONAR_AUTH_TOKEN
-                    '''
-                }
+       stage('Analyse SonarQube') {
+    steps {
+        echo "🔍 Analyse avec SonarQube"
+        withSonarQubeEnv('SonarQube') {
+            script {
+                def scannerHome = tool name: 'DefaultScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                sh """
+                    ${scannerHome}/bin/sonar-scanner \
+                      -Dsonar.projectKey=fileRouge \
+                      -Dsonar.sources=. \
+                      -Dsonar.token=$SONAR_AUTH_TOKEN
+                """
             }
         }
+    }
+}
+
 
         stage('Build & Test Backend (Django)') {
             steps {
