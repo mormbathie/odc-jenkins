@@ -14,6 +14,21 @@ pipeline {
                 checkout scm
             }
         }
+                stage('Analyse SonarQube') {
+            steps {
+                withCredentials([string(credentialsId: 'sonarqub_credential', variable: 'SONAR_TOKEN')]) {
+                    sh '''
+                        sonar-scanner \
+                          -Dsonar.projectKey=fileRouge \
+                          -Dsonar.sources=. \
+                          -Dsonar.host.url=http://localhost:9000 \
+                          -Dsonar.token=$SONAR_TOKEN
+                    '''
+                }
+            }
+        }
+
+              
 
         stage('Build & Test Backend (Django)') {
             steps {
