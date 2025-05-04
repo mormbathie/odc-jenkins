@@ -13,6 +13,18 @@ pipeline {
                 checkout scm
             }
         }
+         stage('Analyse SonarQube') {
+            steps {
+                echo "🔍 Analyse du code avec SonarQube"
+                sh '''
+                    sonar-scanner \
+                      -Dsonar.projectKey=fileRouge \
+                      -Dsonar.sources=. \
+                      -Dsonar.host.url=http://localhost:9000 \
+                      -Dsonar.login=sqp_631893dabada6b71f91292f927e428a239c6aadb
+                '''
+            }
+        }
 
         stage('Build & Test Backend (Django)') {
             steps {
@@ -43,18 +55,7 @@ pipeline {
             }
         }
 
-        stage('Analyse SonarQube') {
-            steps {
-                echo "🔍 Analyse du code avec SonarQube"
-                sh '''
-                    sonar-scanner \
-                      -Dsonar.projectKey=fileRouge \
-                      -Dsonar.sources=. \
-                      -Dsonar.host.url=http://localhost:9000 \
-                      -Dsonar.login=sqp_631893dabada6b71f91292f927e428a239c6aadb
-                '''
-            }
-        }
+       
 
         stage('Build Docker Images') {
             steps {
