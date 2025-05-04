@@ -35,13 +35,16 @@ pipeline {
                 dir('Frontend') {
                     echo "⚙️ Installation et test du frontend React"
                     sh '''
-                        export PATH=$NODE_PATH:$PATH
-                        node -v
-                        npm install
-                        npm audit fix || true
-                        npm run build
-                        # npm test -- --watchAll=false
+                    export NVM_DIR="/var/lib/jenkins/.nvm"
+                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                    nvm use 18
+                
+                    node -v
+                    npm install
+                    npm audit fix || true
+                    npm run build
                     '''
+
                 }
             }
         }
