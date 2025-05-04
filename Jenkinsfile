@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        sonarQubeScanner 'DefaultScanner' // 🛠️ Nom du scanner configuré dans Jenkins
-    }
-
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker_hub'
         DOCKERHUB_USER = 'mormbathie'
@@ -22,7 +18,7 @@ pipeline {
         stage('Analyse SonarQube') {
             steps {
                 echo "🔍 Analyse avec SonarQube"
-                withSonarQubeEnv('SonarQube') { // 🌐 Nom du serveur Sonar configuré dans Jenkins
+                withSonarQubeEnv('SonarQube') { // Nom exact défini dans Manage Jenkins > Configure System
                     sh '''
                         sonar-scanner \
                           -Dsonar.projectKey=fileRouge \
