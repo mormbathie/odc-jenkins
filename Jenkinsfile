@@ -1,10 +1,14 @@
 pipeline {
     agent any
 
+    tools {
+        sonarQubeScanner 'DefaultScanner' // 🛠️ Nom du scanner configuré dans Jenkins
+    }
+
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker_hub'
         DOCKERHUB_USER = 'mormbathie'
-        NODE_PATH = '/var/lib/jenkins/.nvm/versions/node/v18.20.0/bin' // 🧠 À ajuster selon ta version exacte
+        NODE_PATH = '/var/lib/jenkins/.nvm/versions/node/v18.20.0/bin'
     }
 
     stages {
@@ -14,26 +18,25 @@ pipeline {
                 checkout scm
             }
         }
-                stage('Analyse SonarQube') {
+
+        stage('Analyse SonarQube') {
             steps {
-                withCredentials([string(credentialsId: 'sonarqub_credential', variable: 'SONAR_TOKEN')]) {
+                echo "🔍 Analyse avec SonarQube"
+                withSonarQubeEnv('SonarQube') { // 🌐 Nom du serveur Sonar configuré dans Jenkins
                     sh '''
                         sonar-scanner \
                           -Dsonar.projectKey=fileRouge \
                           -Dsonar.sources=. \
-                          -Dsonar.host.url=http://localhost:9000 \
-                          -Dsonar.token=$SONAR_TOKEN
+                          -Dsonar.token=$SONAR_AUTH_TOKEN
                     '''
                 }
             }
         }
 
-              
-
         stage('Build & Test Backend (Django)') {
             steps {
                 dir('Backend/odc') {
-                    echo "⚙️ Création de l'environnement virtuel et test de Django"
+                    echo "⚙️ Test du backend Django"
                     sh '''
                         python3 -m venv venv
                         . venv/bin/activate
@@ -48,18 +51,17 @@ pipeline {
         stage('Build & Test Frontend (React)') {
             steps {
                 dir('Frontend') {
-                    echo "⚙️ Installation et test du frontend React"
+                    echo "⚙️ Test du frontend React"
                     sh '''
-                    export NVM_DIR="/var/lib/jenkins/.nvm"
-                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                    nvm use 18
-                
-                    node -v
-                    npm install
-                    npm audit fix || true
-                    npm run build
-                    '''
+                        export NVM_DIR="/var/lib/jenkins/.nvm"
+                        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                        nvm use 18
 
+                        node -v
+                        npm install
+                        npm audit fix || true
+                        npm run build
+                    '''
                 }
             }
         }
