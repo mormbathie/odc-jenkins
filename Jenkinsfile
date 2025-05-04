@@ -21,11 +21,12 @@ pipeline {
         stage('Analyse SonarQube') {
             steps {
                 echo '🔍 Analyse du code avec SonarQube'
-                withSonarQubeEnv("${SONARQUBE_ENV}") {
-                    dir('Backend/odc') {
-                        sh 'sonar-scanner -Dsonar.projectKey=fileRouge -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000'
+                withSonarQubeEnv('SonarQub') {
+                dir('Backend/odc') {
+                sh '${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectKey=fileRouge -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000'
                     }
-                }
+            }
+
             }
         }
 
