@@ -2,8 +2,13 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = 'docker_hub' 
-        DOCKERHUB_USER = 'mormbathie'       
+        DOCKER_HUB_CREDENTIALS = 'docker_hub'
+        DOCKERHUB_USER = 'mormbathie'
+        SONARQUBE_ENV = 'sonarqub_cred' // nom défini dans "Configure System"
+    }
+
+    tools {
+        sonarQubeScanner 'DefaultScanner' // nom défini dans "Global Tool Configuration"
     }
 
     stages {
@@ -11,6 +16,20 @@ pipeline {
             steps {
                 echo "📥 Clonage du dépôt Git"
                 checkout scm
+            }
+        }
+
+        stage('Analyse SonarQube') {
+            steps {
+                withSonarQubeEnv("${SONARQUBE_ENV}") {
+                    sh '''
+                        sonar-scanner \
+                          -Dsonar.projectKey=fileRouge \
+                          -Dsonar.sources=. \
+                          -Dsonar.language=js \
+                          -Dsonar.sourceEncoding=UTF-8
+                    '''
+                }
             }
         }
 
@@ -37,7 +56,6 @@ pipeline {
                         export PATH=$PATH:/var/lib/jenkins/.nvm/versions/node/v22.15.0/bin/
                         npm install
                         npm run build
-                       # npm test -- --watchAll=false
                     '''
                 }
             }
@@ -67,16 +85,14 @@ pipeline {
                 }
             }
         }
-        stage('run'){
-            steps{
-                dir('cd ..'){
+
+        stage('Run Docker Compose') {
+            steps {
                 sh '''
-                docker-compose down || true
-                docker-compose build
-                docker-compose up
-                #docker run --rm -d -p 8081:8081 ${DOCKERHUB_USER}/mon-frontend:latest
+                    docker-compose down || true
+                    docker-compose build
+                    docker-compose up -d
                 '''
-                }
             }
         }
     }
