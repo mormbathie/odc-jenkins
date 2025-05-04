@@ -23,7 +23,7 @@ pipeline {
                 echo '🔍 Analyse du code avec SonarQube'
                 withSonarQubeEnv("${SONARQUBE_ENV}") {
                     dir('Backend/odc') {
-                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=fileRouge -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000"
+                    sh 'sonar-scanner -Dsonar.projectKey=fileRouge -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000'
                     }
                 }
             }
