@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Configuration de SonarQube (Nom donné dans Jenkins > Manage Jenkins > Tools > SonarQube)
-        SONARQUBE_ENV = 'DefaultScanner'
+        SONARQUBE_ENV = 'SonarQub'
         // Identifiants DockerHub enregistrés dans Jenkins (Manage Jenkins > Credentials)
         DOCKER_HUB_CREDENTIALS_ID = 'dockerhub-creds'
         // Nom du repo DockerHub
