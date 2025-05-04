@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker_hub'
         DOCKERHUB_USER = 'mormbathie'
-        SONARQUBE_ENV = 'sonarqub_cred' // Nom défini dans "Manage Jenkins > Configure System"
+        SONARQUBE_ENV = 'SonarQub' // Nom défini dans "Manage Jenkins > Configure System"
     }
 
     stages {
